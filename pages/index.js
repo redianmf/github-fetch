@@ -1,26 +1,43 @@
+// Import Dependencies
 import { useState, useEffect } from "react";
-import { Container, Row, Col, Table } from "react-bootstrap";
+import { Container, Row, Col, Table, Spinner } from "react-bootstrap";
 import { Octokit } from "@octokit/core";
+import moment from "moment";
+import Swal from "sweetalert2";
 
 export default function Home() {
+  // Declare state
   const [repos, setRepos] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Function to call get repo API
   const getRepos = async () => {
     try {
+      setIsLoading(true);
       const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
       console.log(process.env.GITHUB_USERNAME);
       const response = await octokit.request(
         `GET /users/${process.env.GITHUB_USERNAME}/repos`,
-        {}
+        { type: "private" }
       );
 
-      console.log(response);
+      setRepos(response.data);
+
+      setTimeout(() => setIsLoading(false), 1500);
     } catch (error) {
       console.log(error);
+      Swal.fire({
+        title: "Error!",
+        text: "Data failed to load, please refresh the page",
+        icon: "error",
+        confirmButtonText: "Okay",
+      });
+      setIsLoading(false);
     }
   };
 
+  // Call function when components mounted
   useEffect(() => {
     getRepos();
   }, []);
@@ -36,22 +53,48 @@ export default function Home() {
             </Row>
             <Row>
               <Col className="ms-5 me-5 mt-3">
-                <Table className="table-repos" hover>
-                  <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>Repository Name</th>
-                      <th>Last Updated</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>Mark</td>
-                      <td>Mark</td>
-                    </tr>
-                  </tbody>
-                </Table>
+                {isLoading ? (
+                  <div className="text-center mt-5">
+                    <Spinner animation="border" size="xl" variant="light" />
+                  </div>
+                ) : (
+                  <div className="container-table">
+                    <Table className="table-repos" hover borderless>
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>Repository Name</th>
+                          <th className="text-center">Last Updated</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {repos &&
+                          repos?.map((item, index) => (
+                            <tr key={index}>
+                              <td>{index + 1}</td>
+                              <td>
+                                <a
+                                  href={item.html_url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  {item.name}
+                                </a>
+                              </td>
+                              <td className="text-center">
+                                {moment(item.updated_at).format(
+                                  "D MMMM YYYY, H:mm:ss"
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </Table>
+                  </div>
+                )}
+                <div className="image-source">
+                  Image by manos koutras from Unsplash
+                </div>
               </Col>
             </Row>
           </div>

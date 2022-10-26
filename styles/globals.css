@@ -11,8 +11,8 @@ body {
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+  color: inherit !important;
+  text-decoration: none !important;
 }
 
 * {
@@ -24,6 +24,7 @@ a {
   backdrop-filter: saturate(180%) blur(10px);
   border-radius: 1em;
   height: 90vh;
+  position: relative;
 }
 
 .table-repos {
@@ -40,4 +41,37 @@ th {
 .table-hover tbody tr:hover th {
   background-color: rgba(0, 0, 0, 0.356);
   color: white;
+}
+
+.container-table {
+  max-height: 75vh !important;
+  overflow-y: auto;
+}
+
+.image-source {
+  position: fixed;
+  right: 0;
+  bottom: -2em;
+  font-style: italic;
+  color: white;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #b4b4b4;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: white;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: white;
 }
