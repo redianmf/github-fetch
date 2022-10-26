@@ -31,7 +31,8 @@ a {
   font: white;
 }
 
-td {
+td,
+th {
   color: white;
 }
 
